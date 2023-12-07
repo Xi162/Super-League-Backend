@@ -52,7 +52,11 @@ router.get("/", async (req, res) => {
             JOIN COMPETITOR ON GOAL.Scorer_id = COMPETITOR.Competitor_id
             WHERE Season_year = ${season} AND Is_season = ${isSeason}`
       );
-      resp = [...resultCoachAward, ...resultPlayerAward, ...resultGoalAward];
+      resp = [
+        { ...resultCoachAward[0], Type: "Coach" },
+        { ...resultPlayerAward[0], Type: "Player" },
+        { ...resultGoalAward[0], Type: "Goal" },
+      ];
     } else {
       const [resultPlayerAward, resultPlayerAwardField] =
         await connection.query(
@@ -77,7 +81,11 @@ router.get("/", async (req, res) => {
             JOIN COMPETITOR ON GOAL.Scorer_id = COMPETITOR.Competitor_id
             WHERE Season_year = ${season} AND Is_season = ${isSeason} AND Month = ${month}`
       );
-      resp = [...resultCoachAward, ...resultPlayerAward, ...resultGoalAward];
+      resp = [
+        { ...resultCoachAward[0], Type: "Coach" },
+        { ...resultPlayerAward[0], Type: "Player" },
+        { ...resultGoalAward[0], Type: "Goal" },
+      ];
     }
     res.status(200).json(resp);
     connection.end();
