@@ -1,12 +1,12 @@
 const express = require("express");
 const mysql = require("mysql2/promise");
+const authenticate = require("../middlewares/auth");
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", authenticate, async (req, res) => {
   try {
-    const username = req.body.username;
-    const password = req.body.password;
+    const { username, password } = req.user;
     const isSeason = req.query.type == "season";
     const season = req.query.season;
     const month = req.query.month;
@@ -22,10 +22,10 @@ router.get("/", async (req, res) => {
       };
     }
     const connection = await mysql.createConnection({
-      host: "localhost",
-      user: req.body.username,
-      password: req.body.password,
-      database: "super_league",
+      host: "0.0.0.0",
+      user: username,
+      password: password,
+      database: "SUPER_LEAGUE",
     });
     let resp;
     if (isSeason) {
@@ -53,9 +53,9 @@ router.get("/", async (req, res) => {
             WHERE Season_year = ${season} AND Is_season = ${isSeason}`
       );
       resp = [
-        { ...resultCoachAward[0], Type: "Coach" },
-        { ...resultPlayerAward[0], Type: "Player" },
-        { ...resultGoalAward[0], Type: "Goal" },
+        resultCoachAward[0] && { ...resultCoachAward[0], Type: "Coach" },
+        resultPlayerAward[0] && { ...resultPlayerAward[0], Type: "Player" },
+        resultGoalAward[0] && { ...resultGoalAward[0], Type: "Goal" },
       ];
     } else {
       const [resultPlayerAward, resultPlayerAwardField] =
@@ -82,12 +82,12 @@ router.get("/", async (req, res) => {
             WHERE Season_year = ${season} AND Is_season = ${isSeason} AND Month = ${month}`
       );
       resp = [
-        { ...resultCoachAward[0], Type: "Coach" },
-        { ...resultPlayerAward[0], Type: "Player" },
-        { ...resultGoalAward[0], Type: "Goal" },
+        resultCoachAward[0] && { ...resultCoachAward[0], Type: "Coach" },
+        resultPlayerAward[0] && { ...resultPlayerAward[0], Type: "Player" },
+        resultGoalAward[0] && { ...resultGoalAward[0], Type: "Goal" },
       ];
     }
-    res.status(200).json(resp);
+    res.status(200).json(resp.filter(item => !!item));
     connection.end();
   } catch (e) {
     console.log(e);
