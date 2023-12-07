@@ -1,22 +1,22 @@
 const express = require("express");
 const mysql = require("mysql2/promise");
+const authenticate = require("../middlewares/auth");
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", authenticate, async (req, res) => {
   try {
-    const username = req.body.username;
-    const password = req.body.password;
+    const { username, password } = req.user;
     if (!username || !password) {
       throw {
         msg: "Bad request",
       };
     }
     const connection = await mysql.createConnection({
-      host: "localhost",
-      user: req.body.username,
-      password: req.body.password,
-      database: "super_league",
+      host: "0.0.0.0",
+      user: username,
+      password: password,
+      database: "SUPER_LEAGUE",
     });
     const [resultStaff, resultStaffField] = await connection.query(
       `SELECT * FROM LEAGUE_STAFF`

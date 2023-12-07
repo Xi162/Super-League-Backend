@@ -1,5 +1,6 @@
 const express = require("express");
 const mysql = require("mysql2/promise");
+const authenticate = require("../middlewares/auth");
 
 const router = express.Router();
 
@@ -9,21 +10,20 @@ router.get("/", (req, res) => {
   });
 });
 
-router.get("/:season_year", async (req, res) => {
+router.get("/:season_year", authenticate, async (req, res) => {
   const season_year = req.params.season_year;
   try {
-    const username = req.body.username;
-    const password = req.body.password;
+    const { username, password } = req.user;
     if (!username || !password) {
       throw {
         msg: "Bad request",
       };
     }
     const connection = await mysql.createConnection({
-      host: "localhost",
-      user: req.body.username,
-      password: req.body.password,
-      database: "super_league",
+      host: "0.0.0.0",
+      user: username,
+      password: password,
+      database: "SUPER_LEAGUE",
     });
     const [result, _] = await connection.query(
       `SELECT Match_id, HOME_CLUB.Name AS Home_club_name, AWAY_CLUB.Name AS Away_club_name, 
@@ -45,25 +45,24 @@ router.get("/:season_year", async (req, res) => {
   }
 });
 
-router.get("/:season_year/:matchID", async (req, res) => {
+router.get("/:season_year/:matchID", authenticate, async (req, res) => {
   const season_year = req.params.season_year;
   const matchID = req.params.matchID;
   try {
-    const username = req.body.username;
-    const password = req.body.password;
+    const { username, password } = req.user;
     if (!username || !password) {
       throw {
         msg: "Bad request",
       };
     }
     const connection = await mysql.createConnection({
-      host: "localhost",
-      user: req.body.username,
-      password: req.body.password,
-      database: "super_league",
+      host: "0.0.0.0",
+      user: username,
+      password: password,
+      database: "SUPER_LEAGUE",
     });
     const [resultMatch, resultMatchFields] = await connection.query(
-      `SELECT Match_id, HOME_CLUB.Name AS Home_club_name, AWAY_CLUB.Name AS Away_club_name, 
+      `SELECT Match_id, HOME_CLUB.Name AS Home_club_name, HOME_CLUB.Club_id AS Home_club_id, AWAY_CLUB.Name AS Away_club_name, AWAY_CLUB.Club_id AS Away_club_id, 
         Home_score, Away_score, CLUB_SEASON.Home_stadium AS Stadium, DateTime
         FROM MATCHES 
         JOIN (CLUB AS HOME_CLUB) ON Home_club_id = HOME_CLUB.Club_id

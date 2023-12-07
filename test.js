@@ -4,10 +4,10 @@ require("dotenv").config();
 async function test() {
   try {
     const connection = await mysql.createConnection({
-      host: "localhost",
+      host: "0.0.0.0",
+      port: "3306",
       user: "root",
-      password: "hv",
-      database: "super_league",
+      password: "123456",
     });
     console.log("right");
     connection.end();
@@ -17,13 +17,3 @@ async function test() {
 }
 
 test();
-
-// simple query
-// connection.query(
-//   "SELECT * FROM `MATCHES` WHERE `Match_id` = 1",
-//   function (err, results, fields) {
-//     console.log(results); // results contains rows returned by server
-//     console.log(fields); // fields contains extra meta data about results, if available
-//     connection.end();
-//   }
-// );
