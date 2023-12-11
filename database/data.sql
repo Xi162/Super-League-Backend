@@ -443,8 +443,8 @@ CALL add_award_coach (2019, 'Apex Solutions', FALSE, 10, 1);
 CALL add_award_goal (2019, 'Apex Solutions', FALSE, 10, 3, 1);
 
 -- Add seasonly award 
-CALL add_award_player (2019, 'Apex Solutions', TRUE, NULL, 49);
-CALL add_award_coach (2019, 'Apex Solutions', TRUE, NULL, 1);
+CALL add_award_player (2019, 'Apex Solutions', TRUE, NULL, 48);
+CALL add_award_coach (2019, 'Apex Solutions', TRUE, NULL, 2);
 CALL add_award_goal (2019, 'Apex Solutions', TRUE, NULL, 3, 1);
 
 -- --------------------------------------------------------------------
