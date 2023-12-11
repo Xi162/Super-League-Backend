@@ -56,8 +56,8 @@ router.get("/:season/:clubId/competitors", authenticate, async (req, res) => {
             FROM CLUB_COMPETITOR_PERIOD JOIN COMPETITOR ON CLUB_COMPETITOR_PERIOD.Competitor_id = COMPETITOR.Competitor_id 
             WHERE CLUB_COMPETITOR_PERIOD.Club_id = ${clubId} AND
             (CLUB_COMPETITOR_PERIOD.End_date IS NULL OR 
-            YEAR(CLUB_COMPETITOR_PERIOD.End_date) < ${season_year}) AND
-            YEAR(CLUB_COMPETITOR_PERIOD.Start_date) >= ${season_year}
+            YEAR(CLUB_COMPETITOR_PERIOD.End_date) > ${season_year}) AND
+            YEAR(CLUB_COMPETITOR_PERIOD.Start_date) <= ${season_year}
             `
         )
 
